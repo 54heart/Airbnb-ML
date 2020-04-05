@@ -1,0 +1,172 @@
+---
+title: "EDA"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r load}
+library(readr)
+library(dplyr)
+train_x <- read_csv("airbnb_train_x.csv")
+train_y <- read_csv("airbnb_train_y.csv")
+test_x <- read_csv("airbnb_test_x.csv")
+my_train_x<- train_x[, 29:42]
+```
+
+## see all the variables
+
+```{r pressure, echo=FALSE}
+train_x %>% colnames() 
+```
+
+```{r}
+train.cor <- cor(as.matrix(train_x[, c(3, 5, 6)]))
+train.cor
+```
+
+```{r}
+library(funModeling) 
+library(tidyverse) 
+library(Hmisc)
+status(my_train_x)
+```
+
+```{r}
+glimpse(my_train_x)
+```
+
+## host_listings_count
+how many listings the host has right now
+```{r host_listings_count, echo=FALSE}
+my_train_x[, 1] %>% summary()
+
+boxplot(my_train_x[, 1])
+
+
+```
+
+```{r}
+host_listings_count_freq<- as.data.frame(table(unlist(my_train_x[, 1])))
+plot(host_listings_count_freq$Var1, host_listings_count_freq$Freq)
+# skewed to left, median is 1, has 151 NAs
+```
+
+## host_location
+```{r host_location}
+my_train_x[, 2]
+
+```
+
+## host_name 
+```{r host_location, echo=FALSE}
+m3 <- as.data.frame(my_train_x[, 3])
+
+#number of na is 147
+is.na(m3) %>% table()
+
+temp<- filter(m3, is.na(m3)==FALSE)
+
+#convert all elements to lowercase
+for (i in 1: nrow(temp[1])){
+  temp[i, 1] <- tolower(temp[i, 1])
+}
+
+temp$couple <- as.integer(grepl(pattern = " and |\\+|\\&", x = temp$host_name))
+sum(temp$couple)
+# 7148 couple hosts
+```
+
+##  host_neighbourhood 
+```{r host_location, echo=FALSE}
+m4<- my_train_x[, 4]
+describe(m4)
+
+# a lot of missing values
+
+
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+m5 <- my_train_x[, 5]
+
+
+
+# coerce wrong inputs such as "house", "Apartment" as NA
+m5 <- as.character(unlist(m5))
+m5 <- (as.numeric(sub("%", "", m5))/100) #remove percent sign
+
+
+freq(m5)
+describe(m5)
+#very skewed, most hosts respond quickly
+```
+
+
+## host_response_time 
+```{r host_location, echo=FALSE}
+freq(my_train_x[, 6])
+
+# One-hot encoded
+m6 <- my_train_x[, 6]%>%mutate( 
+  		# Create 
+  		an_hr = ifelse(host_response_time  == "within an hour", 1, 0),
+  		few_hr = ifelse(host_response_time  == "within a few hours", 1, 0),
+  		a_day = ifelse(host_response_time  == "within a day", 1, 0),
+  		few_days = ifelse(host_response_time  == "within a few days", 1, 0))
+
+# don't know what f means
+```
+
+## host_since
+```{r host_location, echo=FALSE}
+m7 <- my_train_x[, 7]
+                                       # Replicate data for Example 1
+# Create new variable: weekday
+m7$weekday <- weekdays(m7$host_since) 
+m7$weekday 
+
+
+```
+
+## host_total_listings_count
+```{r host_location, echo=FALSE}
+my_train_x[, 8]
+
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 9]
+
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 10]
+
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 11]
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 12]
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 13]
+```
+
+## host_response_rate
+```{r host_location, echo=FALSE}
+my_train_x[, 14]
+```
