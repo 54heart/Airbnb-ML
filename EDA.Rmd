@@ -60,7 +60,7 @@ plot(host_listings_count_freq$Var1, host_listings_count_freq$Freq)
 
 ## host_location
 ```{r host_location}
-my_train_x[, 2]
+my_train_x[[2]]
 
 ```
 
@@ -106,7 +106,6 @@ m5 <- (as.numeric(sub("%", "", m5))/100) #remove percent sign
 
 
 freq(m5)
-describe(m5)
 #very skewed, most hosts respond quickly
 ```
 
@@ -155,28 +154,39 @@ plot(m8_freq$m8, m8_freq$Freq)
 ```
 
 ## host_verifications
-```{r host_location, echo=FALSE}
+```{r , echo=FALSE}
 m9 <- my_train_x$host_verifications
 
+# remove symbols and split
+m9 <- gsub("\\[|]", "", m9)
+m9 <- gsub('"', '', m9)
+m9 <- gsub("'", "", m9)
+m9 <-strsplit(m9,", ")
+
+
+
 maxlength <- 0
-for (i in m9){
-  if (length(i) > maxlength){
-    maxlength <- length(i)
+for (i in 1:100000){
+  if (length(m9[[i]]) > maxlength){
+    maxlength <- length(m9[[i]])
+    print(m9[[i]])
   }
 }
 
 
-m9 <- gsub("\\[|]", "", m9)
-m9 <- gsub('"', '', m9)
-m9 <- gsub("'", "", m9)
-m9 <-strsplit(m9,",")
-m9[1]
 
 ```
 
 ## house_rules
 ```{r host_location, echo=FALSE}
-my_train_x[, 10]
+m10<-(my_train_x$house_rules)
+
+
+library(tidytext)
+m10 %>%
+  unnest_tokens(word, m10) %>%
+  anti_join(stop_words) %>%
+  count(word, sort = TRUE)
 
 ```
 
