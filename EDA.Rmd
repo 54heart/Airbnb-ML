@@ -2,6 +2,8 @@
 title: "EDA"
 output: html_document
 ---
+## New Variables:
+1. host_exp_years: years since becoming a host
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -125,11 +127,20 @@ m6 <- my_train_x[, 6]%>%mutate(
 ## host_since
 ```{r host_location, echo=FALSE}
 m7 <- my_train_x[, 7]
-                                       # Replicate data for Example 1
-# Create new variable: weekday
-m7$weekday <- weekdays(m7$host_since) 
-m7$weekday 
+m7 <- as.Date(m7$host_since)
+plot(as.data.frame(train_x[35]), as.data.frame(train_y[3]))
 
+x<-as.data.frame(train_x[35])
+y<- as.data.frame(train_y[2])
+
+df<- cbind(x,y)
+ggplot(data = df, aes(x = df$host_since, y = df$review_scores_rating))+
+  geom_line(color = "#00AFBB", size = 0.4)
+
+
+# Create new variable of years since first becoming a host
+today <- as.Date("2020-04-04")
+host_exp_years<- difftime(today, m7)/365
 
 ```
 
