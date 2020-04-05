@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load}
 library(readr)
 library(dplyr)
+setwd("~/Google Drive/MSBA/ClarkR/Project/Data")
 train_x <- read_csv("airbnb_train_x.csv")
 train_y <- read_csv("airbnb_train_y.csv")
 test_x <- read_csv("airbnb_test_x.csv")
@@ -94,6 +95,7 @@ describe(m4)
 
 ## host_response_rate
 ```{r host_location, echo=FALSE}
+library(frequency)
 m5 <- my_train_x[, 5]
 
 
@@ -144,40 +146,61 @@ host_exp_years<- difftime(today, m7)/365
 
 ```
 
-## host_total_listings_count
+## host_total_listings_count: how many listings hosted ever
 ```{r host_location, echo=FALSE}
-my_train_x[, 8]
+m8 <- my_train_x$host_total_listings_count
+
+m8_freq<- as.data.frame(table(m8))
+plot(m8_freq$m8, m8_freq$Freq)
+```
+
+## host_verifications
+```{r host_location, echo=FALSE}
+m9 <- my_train_x$host_verifications
+
+maxlength <- 0
+for (i in m9){
+  if (length(i) > maxlength){
+    maxlength <- length(i)
+  }
+}
+
+
+m9 <- gsub("\\[|]", "", m9)
+m9 <- gsub('"', '', m9)
+m9 <- gsub("'", "", m9)
+m9 <-strsplit(m9,",")
+m9[1]
 
 ```
 
-## host_response_rate
-```{r host_location, echo=FALSE}
-my_train_x[, 9]
-
-```
-
-## host_response_rate
+## house_rules
 ```{r host_location, echo=FALSE}
 my_train_x[, 10]
 
 ```
 
-## host_response_rate
+## instant_bookable
 ```{r host_location, echo=FALSE}
 my_train_x[, 11]
 ```
 
-## host_response_rate
+## interaction
 ```{r host_location, echo=FALSE}
-my_train_x[, 12]
+my_train_x$interaction
 ```
 
-## host_response_rate
+## is_business_travel_ready
 ```{r host_location, echo=FALSE}
-my_train_x[, 13]
+my_train_x$is_business_travel_ready
 ```
 
-## host_response_rate
+## is_location_exact
 ```{r host_location, echo=FALSE}
-my_train_x[, 14]
+m14 <- my_train_x$is_location_exact
+
+# convert datatype to 1, 0
+m14 <- ifelse(m14 ==TRUE, 1, 0)
+
+
 ```
