@@ -122,6 +122,11 @@ m6 <- my_train_x[, 6]%>%mutate(
   		a_day = ifelse(host_response_time  == "within a day", 1, 0),
   		few_days = ifelse(host_response_time  == "within a few days", 1, 0))
 
+# plot review rating against response time
+x<-as.data.frame(train_x[34])
+y<- as.data.frame(train_y[2])
+df<- cbind(x,y)
+ggplot(data = df, aes(x = df$host_response_time, y = df$review_scores_rating))+geom_boxplot()
 # don't know what f means
 ```
 
@@ -129,7 +134,6 @@ m6 <- my_train_x[, 6]%>%mutate(
 ```{r host_location, echo=FALSE}
 m7 <- my_train_x[, 7]
 m7 <- as.Date(m7$host_since)
-plot(as.data.frame(train_x[35]), as.data.frame(train_y[3]))
 
 x<-as.data.frame(train_x[35])
 y<- as.data.frame(train_y[2])
@@ -163,18 +167,17 @@ m9 <- gsub('"', '', m9)
 m9 <- gsub("'", "", m9)
 m9 <-strsplit(m9,", ")
 
+# unique values of verifications
+uni <- unique(unlist(m9)) 
 
-
-maxlength <- 0
-for (i in 1:100000){
-  if (length(m9[[i]]) > maxlength){
-    maxlength <- length(m9[[i]])
-    print(m9[[i]])
-  }
+# What percentage of hosts has a kind of verification
+veri_percent <- c()
+for (i in uni){
+  percent <- mean(grepl(i, m9))
+  veri_percent <- c(veri_percent, percent)
 }
 
-
-
+#email, phone, reviews are popular verifications 
 ```
 
 ## house_rules
@@ -191,8 +194,21 @@ m10 %>%
 ```
 
 ## instant_bookable
+Interestingly, if the listing is instant bookable, it is more likely to have a high_booking_rate. However, an instant bookable listing tends to have a lower review scores than a non-instant_bookable listing.
 ```{r host_location, echo=FALSE}
-my_train_x[, 11]
+m11 <- my_train_x[[11]]
+
+# convert datatype to 1, 0
+m11 <- ifelse(m11 ==TRUE, 1, 0)
+
+instant_bookable <- as.factor(my_train_x[[11]])
+popular <- as.factor(train_y$high_booking_rate)
+rating_score <- train_y$review_scores_rating
+
+df <- data.frame(instant_bookable, popular, rating_score)
+
+ggplot(df, aes(instant_bookable, ..count..)) + geom_bar(aes(fill = popular), position = "dodge")
+ggplot(df, aes(instant_bookable, rating_score)) + geom_boxplot()
 ```
 
 ## interaction
@@ -202,7 +218,10 @@ my_train_x$interaction
 
 ## is_business_travel_ready
 ```{r host_location, echo=FALSE}
-my_train_x$is_business_travel_ready
+m13 <- my_train_x$is_business_travel_ready
+
+# convert datatype to 1, 0
+m13 <- ifelse(m13 ==TRUE, 1, 0)
 ```
 
 ## is_location_exact
