@@ -50,6 +50,12 @@ impute<- function(x, roundup= FALSE, value = NULL){
 
 
 
+
+
+
+
+
+
 # 2. Preprocess Variables
 
 # var2 accommodates---------------
@@ -57,7 +63,7 @@ impute<- function(x, roundup= FALSE, value = NULL){
 df <- remove(df$accommodates)
 
 # var3 amenities---------------
-#creating the variable amenities_count from the variable amenities
+#creating the var72 amenities_count from the variable amenities
 corpus <- (VectorSource(df$amenities))
 corpus <- Corpus(corpus)
 #summary(corpus)
@@ -75,7 +81,6 @@ for (i in 1:100000){
 }
 
 df$amenities_count <- vectored
-
 
 
 
@@ -233,21 +238,23 @@ df$price = as.numeric(substring(as.character(df$price),2))
 df$price <- impute(df$price)
 
 # 55 property_type---------------
-##? todo 
+## TODO
 
 
 # 59 room_type---------------
-## map category to 0 1 2
-df$room_type <- ifelse(df$room_type == 'Entire home/apt', 0,
-                       ifelse(df$room_type == 'Private room', 1, ifelse(df$room_type == 'Shared room',2, 3)))
+## TODO onehotencoding
 
 
 # 60 security_deposit---------------
+# remove $, convert numeric values into yes or no(1, 0), impute NA with mode: 1
 df$security_deposit <- as.character(df$security_deposit)
 df$security_deposit <- as.numeric(substring(as.character(df$security_deposit),2))
 df$security_deposit <- ifelse(df$security_deposit>0,1,0)
+df$security_deposit <- impute(df$security_deposit, value = 1) 
 
 
+
+#-------------the below codes cannot run, yet to be fixed------
 # 67 transit---------------
 df$transit <- as.character(df$transit)
 matrix <- create_matrix(df$transit, language="english", removeSparseTerms = 0.95, removeStopwords=TRUE, removeNumbers=FALSE, stemWords=TRUE, stripWhitespace=TRUE, toLower=TRUE)
@@ -260,69 +267,13 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 
 
-#creating the variable -> amenities_count from the variableamenities
-corpus <- (VectorSource(df$amenities))
-corpus <- Corpus(corpus)
-#summary(corpus)
-vectored <-c()
-#length(corpus)
-#i=0
-for (i in 1:100000){
-  if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 0){
-    vectored <- c(vectored,0) }
-  else if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 1){
-    vectored <- c(vectored,0)}
-  else{
-    vectored <- c(vectored,length(unlist(strsplit(corpus[[i]]$content, "[,]"))))
-  }
-}
+ 
 
-df$amenities_count <- vectored
+# Write dataframe as CSV
 
-
-
-
-
-
-
-
-# Convert the "security_deposit" column to Binary column
-df$security_deposit <- as.character(df$security_deposit)
-df$security_deposit <- as.numeric(substring(as.character(df$security_deposit),2))
-df$security_deposit <- ifelse(df$security_deposit>0,1,0)
-
-                             
-# Grade the "transit" column
-df$transit <- as.character(df$transit)
-matrix <- create_matrix(df$transit, language="english", removeSparseTerms = 0.95, removeStopwords=TRUE, removeNumbers=FALSE, stemWords=TRUE, stripWhitespace=TRUE, toLower=TRUE)
-mat <- as.matrix(matrix)
-
-flexible <- data.frame(mat)
-df$flexible <- (flexible$bike+flexible$bus+flexible$buses
-                      +flexible$metro+flexible$line+flexible$lines+flexible$subway
-                      +flexible$train+flexible$trains+flexible$transportation)
-
-
-
-## Huyen
-
-
-# Translate the "room_type" column
-df$room_type <- as.character(df$room_type)
-df$room_type <- ifelse(df$room_type == 'Entire home/apt', 0,
-                             ifelse(df$room_type == 'Private room', 1, ifelse(df$room_type == 'Shared room',2, 3)))
-
-# the "cleaning_fee" column
-df$cleaning_fee = as.numeric(substring(as.character(df$cleaning_fee),2))
-df$cleaning_fee[is.na(df$cleaning_fee)] <- 66.98
-
-
-
-df_export <- merge(df, flexible, by.x= 'X', by.y = )
-select <- c("accommodates", "availability_30", "availability_60", "availability_90", "bathrooms", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "guests_included", "host_is_superhost", "host_listings_count", "host_response_rate","is_business_travel_ready", "minimum_nights", "price", "room_type", "security_deposit", "high_booking_rate", "Real_Bed", "Num_amenities", "experience")
-
-
-write.csv(df,file="I:\\Airbnb Group Project\\train1.csv")
+choose <- c(2, 4, 5, 6, 7, 8, 10, 11, 12, 15, 17, 20, 21, 22, 23, 25, 26, 27, 28, 32, 33, 38, 40, 41, 48, 54, 56, 57, 58, 60, 70, 71, 72)
+export <- df %>% select(choose)
+write.csv(export,file="train2.csv", row.names = FALSE)
 
 
 
