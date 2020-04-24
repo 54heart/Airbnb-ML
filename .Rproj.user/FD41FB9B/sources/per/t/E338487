@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1587693866478.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3925835804",
+    "id" : "E338487",
+    "lastKnownWriteTime" : 1587670491,
+    "last_content_update" : 1587670491,
+    "path" : "~/GitHub/Airbnb-ML/preprocess_train.R",
+    "project_path" : "preprocess_train.R",
+    "properties" : {
+        "cursorPosition" : "15,0",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
