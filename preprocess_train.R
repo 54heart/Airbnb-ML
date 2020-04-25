@@ -6,9 +6,11 @@ library(tm)
 library(SnowballC)
 library(dplyr)
 
+
+
 #read data col_types = cols(zipcode = col_character()
-train_x <- read_csv("data/airbnb_train_x.csv")
-train_y <- read_csv("data/airbnb_train_y.csv")
+train_x <- read_csv("airbnb_train_x.csv")
+train_y <- read_csv("airbnb_train_y.csv")
 # merge features and label
 df <- merge(train_x, train_y, by.x = 'X1', by.y = 'X1')
 
@@ -371,7 +373,7 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 # Export as CSV file
 export <- df[selected] # use the selected features
-write.csv(export, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
+write.csv(export, file="train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 
 
 
