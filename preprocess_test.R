@@ -81,7 +81,7 @@ corpus <- Corpus(corpus)
 vectored <-c()
 #length(corpus)
 #i=0
-for (i in 1:100000){
+for (i in c(1:length(df)){
   if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 0){
     vectored <- c(vectored,0) }
   else if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 1){
