@@ -3,7 +3,7 @@ set.seed(12345)
 
 df = read.csv("train_cleaned.csv")
 
-df_competition = read.csv("test2.csv")
+df_competition = read.csv("airbnb_test_x_final.csv")
 View(df_competition)
 ## Randomly partition the data into 30% testing data and the remaining 70% data.
 test_instn = sample(nrow(df), 0.3*nrow(df))
@@ -16,7 +16,7 @@ df_valid <- df_rest[valid_instn,]
 df_train <- df_rest[-valid_instn,]
 
 model_log <- glm(high_booking_rate~accommodates+availability_60+availability_90
-                 +bathrooms+bed_type+bedrooms+beds+
+                 +bathrooms+Real_Bed+bedrooms+beds+
                    cancellation_policy+cleaning_fee+extra_people+
                    first_review+guests_included+host_about+host_has_profile_pic+
                    host_identity_verified+host_is_superhost+host_listings_count+
@@ -24,11 +24,16 @@ model_log <- glm(high_booking_rate~accommodates+availability_60+availability_90
                    is_business_travel_ready+is_location_exact+maximum_nights+
                    minimum_nights+price+require_guest_phone_verification+
                    require_guest_profile_picture+requires_license+
-                   experience, data = df,family="binomial")
+                   experience, data = df_train,family="binomial")
 summary(model_log)
 
-log_probs <- predict(model_log, newdata = df_valid, type = "response")
-pred <- prediction(log_probs, df_valid$high_booking_rate)
+
+
+log_valid_probs <- predict(model_log, newdata = df_valid, type = "response")
+
+library(ROCR)
+
+pred <- prediction(log_valid_probs, df_valid$high_booking_rate)
 
 tpr.perf = performance(pred, measure = "tpr")
 tnr.perf = performance(pred, measure = "tnr")
@@ -52,11 +57,12 @@ confusion_matrix <- function(preds, actuals, cutoff){
   confusion_matrix <- table(actuals,classifications)
 }
 
-log_valid_preds = predict(model_log,newdata=df_valid,type="response")
-log_matrix <- confusion_matrix(log_valid_preds, df_valid$high_booking_rate,0.46807)
+#log_valid_preds = predict(model_log,newdata=df_valid,type="response")
+log_matrix <- confusion_matrix(log_valid_probs, df_valid$high_booking_rate,0.448829)
 
 acc_log = (log_matrix[1] + log_matrix[4])/sum(log_matrix)
 acc_log
+#0.7788588
 
 #Trying to improve the model
 log_matrix
