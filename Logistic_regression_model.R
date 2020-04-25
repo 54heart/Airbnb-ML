@@ -3,7 +3,7 @@ set.seed(12345)
 
 df = read.csv("train_cleaned.csv")
 
-df_competition = read.csv("airbnb_test_x_final.csv")
+df_competition = read.csv("test_cleaned.csv")
 View(df_competition)
 ## Randomly partition the data into 30% testing data and the remaining 70% data.
 test_instn = sample(nrow(df), 0.3*nrow(df))

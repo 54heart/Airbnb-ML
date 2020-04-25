@@ -365,8 +365,6 @@ selected_test <- add_test('roomPrivate room')
 selected_test <- add_test('roomShared room')
 
 
-
-
 # 60 security_deposit---------------
 # remove $, convert numeric values into yes or no(1, 0), impute NA with mode: 1
 df_test$security_deposit <- as.character(df_test$security_deposit)
