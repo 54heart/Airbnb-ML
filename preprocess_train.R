@@ -366,6 +366,7 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
                 +flexible$train+flexible$trains+flexible$transportation)
 }
 
+selected
 
 
  
