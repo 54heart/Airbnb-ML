@@ -199,120 +199,13 @@ df$host_identity_verified <- impute(df$host_identity_verified, value = TRUE)
 df$host_identity_verified <- ifelse(df$host_identity_verified == TRUE, 1, 0)
 selected <- add(26)
 
+
 # 27 host_is_superhost---------------
 ## IMPUTE 142 NA with common class 0
 df$host_is_superhost <- as.character(df$host_is_superhost)
 df$host_is_superhost <- ifelse(df$host_is_superhost ==TRUE,1,0)
 df$host_is_superhost<- impute(df$host_is_superhost, value = 0)
 selected <- add(27)
-
-
-# 28 host_listings_count---------------
-### impute na with mean(round)
-df$host_listings_count <- impute(df$host_listings_count, roundup = TRUE)
-selected <- add(28)
-
-
-# 32 host_response_rate (15793 NA)---------------
-## remove % sign, and impute rounded mean, and divide by 100. 
-df$host_response_rate <- as.numeric(gsub("\\%", '', df$host_response_rate)) # remove % sign
-df$host_response_rate <- impute(df$host_response_rate, roundup = TRUE)
-df$host_response_rate <- df$host_response_rate/100
-selected <- add(32)
-
-
-# 33 host_response_time---------------
-df$host_response_time <- as.character(df$host_response_time)
-df$host_response_time[df$host_response_time == 'within an hour'] <- 4
-df$host_response_time[df$host_response_time =='within a few hours'] <- 3
-df$host_response_time[df$host_response_time =='within a day'] <- 2
-df$host_response_time[df$host_response_time == 'a few days or more'] <- 1
-df$host_response_time <- as.numeric(df$host_response_time)
-### impute na with the mode
-#### define mode function
-Mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max(tabulate(match(x, ux)))]
-}
-
-md <- Mode(df$host_response_time)
-df$host_response_time[is.na(df$host_response_time)==TRUE] <- md
-selected <- add(33)
-
-# 34 host_since---------------
-## New var 71 experience
-## Transform the "host_since" column to time difference
-## remove 142 NA in df$experience, this also might affect other columns with 142 NAs
-df$host_since <- as.Date(df$host_since, origin="1960-10-01")
-df$experience <- difftime(Sys.Date(), df$host_since)
-df<- remove(df$experience)
-
-
-
-# 37 house_rules---------------
-## no party no pets, no smoking
-
-
-# 38 instant_bookable---------------
-## convert to numeric 1,0 
-df$instant_bookable <- ifelse(df$instant_bookable == TRUE, 1, 0)
-selected <- add(38)
-
-
-# 40 is_business_travel_ready---------------
-## convert to 1, 0
-## impute 44529 NAs as 0 (not business travel ready)
-df$is_business_travel_ready<-ifelse(df$is_business_travel_ready==TRUE,1,0)
-df$is_business_travel_ready <- impute(df$is_business_travel_ready, value = 0)
-selected <- add(40)
-
-
-# 41 is_location_exact---------------
-## convert to 1, 0
-df$is_location_exact<- ifelse(df$is_location_exact== TRUE, 1, 0)
-selected <- add(41)
-
-
-# 47 maximum_nights---------------
-## maybe can create new variable: allow long-stay or not
-selected <- add(47)
-
-# 54 price---------------
-## remove dollar sign and impute 573 NAs with mean
-df$price = as.numeric(substring(as.character(df$price),2))
-df$price <- impute(df$price)
-selected <- add(54)
-
-
-# 55 property_type---------------
-## TODO
-
-
-# 59 room_type---------------
-## TODO onehotencoding
-
-
-# 60 security_deposit---------------
-# remove $, convert numeric values into yes or no(1, 0), impute NA with mode: 1
-df$security_deposit <- as.character(df$security_deposit)
-df$security_deposit <- as.numeric(substring(as.character(df$security_deposit),2))
-df$security_deposit <- ifelse(df$security_deposit>0,1,0)
-df$security_deposit <- impute(df$security_deposit, value = 1) 
-selected <- add(60)
-
-
-#-------------the below codes cannot run, yet to be fixed------
-# 67 transit---------------
-if(FALSE){df$transit <- as.character(df$transit)
-matrix <- create_matrix(df$transit, language="english", removeSparseTerms = 0.95, removeStopwords=TRUE, removeNumbers=FALSE, stemWords=TRUE, stripWhitespace=TRUE, toLower=TRUE)
-mat <- as.matrix(matrix)
-
-flexible <- data.frame(mat)
-df$flexible <- (flexible$bike+flexible$bus+flexible$buses
-                +flexible$metro+flexible$line+flexible$lines+flexible$subway
-                +flexible$train+flexible$trains+flexible$transportation)
-}
-
 
 
 
