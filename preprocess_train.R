@@ -1,16 +1,13 @@
 #load libraries
-
 # 0. Load Libraries
 library(readr)
 library(tm)
 library(SnowballC)
 library(dplyr)
 
-
-
 #read data col_types = cols(zipcode = col_character()
-train_x <- read_csv("airbnb_train_x.csv")
-train_y <- read_csv("airbnb_train_y.csv")
+train_x <- read_csv("data/airbnb_train_x.csv")
+train_y <- read_csv("data/airbnb_train_y.csv")
 # merge features and label
 df <- merge(train_x, train_y, by.x = 'X1', by.y = 'X1')
 
@@ -55,10 +52,10 @@ impute<- function(x, roundup= FALSE, value = NULL){
 
 
 # define function that take in variable number in df and add to a list called selected
-add <- function(var_number){
-  if ((colnames(df[var_number+1]) %in% selected)==FALSE){
-    selected <- c(selected, colnames(df[var_number+1]))
-  }
+add <- function(var){
+  if ((var %in% selected)==FALSE){
+    selected <- c(selected, as.character(var))
+    }
   return(selected)
 }
 
@@ -76,7 +73,7 @@ selected <- c("high_booking_rate")
 # var2 accommodates---------------
 ### Remove 9 bad recoreds
 df <- remove(df$accommodates)
-selected <- add(2) # using custom function to add variable name to list, meaning that we will select this as our feature
+selected <- add('accommodates') # using custom function to add variable name to list, meaning that we will select this as our feature
 
 
 # var3 amenities---------------
@@ -106,40 +103,40 @@ df$amenities_count <- vectored
 # 5 availability_365---------------
 #making changes to availability_60 and avail_90 to make them independent of availabi_30 and so on
 df$availability_365 <- df$availability_365-df$availability_90
-selected <-add(5)
+selected <-add('availability_365')
 
 # var6 availability_60
 df$availability_60 <- df$availability_60 - df$availability_30
-selected <-add(6)
+selected <-add('availability_60')
 
 # var7 availability_90
 df$availability_90 <- df$availability_90 - df$availability_60 - df$availability_30
-selected <-add(7)
+selected <-add('availability_90')
 
 # var8 bathrooms---------------
 ##replacing all character data in bathrooms column with the mean(rounded)
 # check the mean
 mean(df$bathrooms, na.rm = TRUE) # mean is 1.28, and we will round to 1.5
 df$bathrooms <- impute(df$bathrooms, value = 1.5)
-selected <- add(8)
+selected <- add('bathrooms')
 
 # var9 bed_type---------------
 # create new var70 : Real_Bed
 df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,0)
-selected <- add(9)
+selected <- add('Real_Bed')
 
 
 # var10 bedrooms---------------
 ## impute 92 NA with mean, and roundup to no decimals
 df$bedrooms <- impute(df$bedrooms, roundup = TRUE)
-selected <- add(10)
+selected <- add('bedrooms')
 
 
 
 # 11 beds---------------
 ## impute 83 NA with mean, and roundup to no decimals
 df$beds <- impute(df$beds, roundup = TRUE)
-selected <- add(11)
+selected <- add('beds')
 
 
 # 12 cancellation_policy---------------
@@ -151,7 +148,7 @@ df$cancellation_policy[df$cancellation_policy == 'strict']<-6
 df$cancellation_policy[df$cancellation_policy == 'super_strict_30']<-8
 df$cancellation_policy[df$cancellation_policy == 'super_strict_60']<-10
 df$cancellation_policy <- as.integer(df$cancellation_policy)
-selected <- add(12)
+selected <- add('cancellation_policy')
 
 
 
@@ -159,7 +156,7 @@ selected <- add(12)
 ## impute NA with zero. (don't charge cleaning fees)
 df$cleaning_fee = as.numeric(substring(as.character(df$cleaning_fee),2))
 df$cleaning_fee<- impute(df$cleaning_fee, value = 0)
-selected <- add(15)
+selected <- add('cleaning_fee')
 
 
 # 17 country_code---------------
@@ -170,7 +167,7 @@ df <- df[which(df$country_code == 'US'),]
 # 20 extra_people---------------
 ## remove dollar sign
 df$extra_people <- as.numeric(substring(as.character(df$extra_people), first = 2))
-selected <- add(20)
+selected <- add('extra_people')
 
 
 # 21 first_review---------------
@@ -178,43 +175,43 @@ selected <- add(20)
 df$first_review <- as.Date(df$first_review,origin="1960-10-01")
 df$first_review <- difftime(Sys.Date(), df$first_review)
 df$first_review<-as.integer(df$first_review)
-selected <- add(21)
+selected <- add('first_review')
 
 
 # 22 guests_included---------------
 ## very clean but have to think about relationship with extra fee and accommodates
-selected <- add(22)
+selected <- add('guests_included')
 
 # 23 host_about---------------
 ## if the hosts didn't write anything about themselves, take 0, otherwise 1
 df$host_about <- ifelse(is.na(df$host_about)== TRUE, 0, 1)
-selected <- add(23)
+selected <- add('host_about')
 
 
 # 25 host_has_profile_pic---------------
 ### impute most common class because almost everyon has profile pic
 df$host_has_profile_pic <- impute(df$host_has_profile_pic, value = TRUE)
 df$host_has_profile_pic <- ifelse(df$host_has_profile_pic == TRUE, 1, 0)
-selected <- add(25)
+selected <- add('host_has_profile_pic')
 
 # 26 host_identity_verified---------------
 ## impute 142 instances with commono class
 df$host_identity_verified <- impute(df$host_identity_verified, value = TRUE)
 df$host_identity_verified <- ifelse(df$host_identity_verified == TRUE, 1, 0)
-selected <- add(26)
+selected <- add('host_identity_verified')
 
 # 27 host_is_superhost---------------
 ## IMPUTE 142 NA with common class 0
 df$host_is_superhost <- as.character(df$host_is_superhost)
 df$host_is_superhost <- ifelse(df$host_is_superhost ==TRUE,1,0)
 df$host_is_superhost<- impute(df$host_is_superhost, value = 0)
-selected <- add(27)
+selected <- add('host_is_superhost')
 
 
 # 28 host_listings_count---------------
 ### impute na with mean(round)
 df$host_listings_count <- impute(df$host_listings_count, roundup = TRUE)
-selected <- add(28)
+selected <- add('host_listings_count')
 
 
 # 32 host_response_rate (15793 NA)---------------
@@ -222,7 +219,7 @@ selected <- add(28)
 df$host_response_rate <- as.numeric(gsub("\\%", '', df$host_response_rate)) # remove % sign
 df$host_response_rate <- impute(df$host_response_rate, roundup = TRUE)
 df$host_response_rate <- df$host_response_rate/100
-selected <- add(32)
+selected <- add('host_response_rate')
 
 
 # 33 host_response_time---------------
@@ -241,7 +238,7 @@ Mode <- function(x) {
 
 md <- Mode(df$host_response_time)
 df$host_response_time[is.na(df$host_response_time)==TRUE] <- md
-selected <- add(33)
+selected <- add('host_response_time')
 
 # 34 host_since---------------
 ## New var 71 experience
@@ -261,7 +258,7 @@ df<- remove(df$experience)
 # 38 instant_bookable---------------
 ## convert to numeric 1,0 
 df$instant_bookable <- ifelse(df$instant_bookable == TRUE, 1, 0)
-selected <- add(38)
+selected <- add('instant_bookable')
 
 
 # 40 is_business_travel_ready---------------
@@ -269,23 +266,23 @@ selected <- add(38)
 ## impute 44529 NAs as 0 (not business travel ready)
 df$is_business_travel_ready<-ifelse(df$is_business_travel_ready==TRUE,1,0)
 df$is_business_travel_ready <- impute(df$is_business_travel_ready, value = 0)
-selected <- add(40)
+selected <- add('is_business_travel_ready')
 
 
 # 41 is_location_exact---------------
 ## convert to 1, 0
 df$is_location_exact<- ifelse(df$is_location_exact== TRUE, 1, 0)
-selected <- add(41)
+selected <- add('is_location_exact')
 
 
 # 47 maximum_nights---------------
 ## create new var73: allow long-stay(more than 7 days) or not
 ifelse(df$maximum_nights >7, 1, 0)
-selected <- add(47)
+selected <- add('maximum_nights')
 
 
 # 48 minimum_nights-----------------
-selected <- add(48)
+selected <- add('minimum_nights')
 
 
 
@@ -293,7 +290,7 @@ selected <- add(48)
 ## remove dollar sign and impute 573 NAs with mean
 df$price = as.numeric(substring(as.character(df$price),2))
 df$price <- impute(df$price)
-selected <- add(54)
+selected <- add('price')
 
 
 # 55 property_type---------------
@@ -309,8 +306,18 @@ df['propertyCommon_house'] <- ifelse((df$property_type %in% common_house), 1, 0)
 df['propertySide_house'] <- ifelse((df$property_type %in% side_house), 1, 0) #var79
 df['propertyHotel'] <- ifelse((df$property_type %in% hotel), 1, 0) #var80
 df['propertySpecial'] <- ifelse((df$property_type %in% special), 1, 0) #var81
-selected <- add(c(77:81))
+
+
+selected <- add('propertyApartment')
+selected <- add('propertyCommon_house')
+selected <- add('propertySide_house')
+selected <- add('propertyHotel')
+selected <- add('propertySpecial')
+
+
+
   
+
 # this code block is an alternative way to onehot encode all of the property types
 if(FALSE){
 library(mltools)
@@ -324,15 +331,15 @@ newdata <- one_hot(as.data.table(as.factor(df$property_type)))
 
 # 56 require_guest_phone_verification------------
 df$require_guest_phone_verification <- ifelse(df$require_guest_phone_verification==TRUE, 1, 0)
-selected <- add(56)
+selected <- add('require_guest_phone_verification')
 
 # 57 require_guest_profile_picture----------
 df$require_guest_profile_picture <- ifelse(df$require_guest_profile_picture==TRUE, 1, 0)
-selected <- add(57)
+selected <- add('require_guest_profile_picture')
 
 # 58 requires_license---------------
 df$requires_license <- ifelse(df$requires_license==TRUE, 1, 0)
-selected <- add(58)
+selected <- add('requires_license')
 
 # 59 room_type---------------
 ## onehotencode. Created new three columns: var74 roomEntire home/apt, 75 roomPrivate room, 76 roomShared room
@@ -340,9 +347,12 @@ room <- as.factor(df$room_type)
 temp <- as.data.frame(model.matrix(~room)) # onehotencode
 colnames(temp)[1] <- 'roomEntire home/apt'
 df <- cbind(df, temp)
-selected <- add(74)
-selected <- add(75)
-selected <- add(76)
+
+selected <- add('roomEntire home/apt')
+selected <- add('roomPrivate room')
+selected <- add('roomShared room')
+
+
 
 
 # 60 security_deposit---------------
@@ -351,7 +361,10 @@ df$security_deposit <- as.character(df$security_deposit)
 df$security_deposit <- as.numeric(substring(as.character(df$security_deposit),2))
 df$security_deposit <- ifelse(df$security_deposit>0,1,0)
 df$security_deposit <- impute(df$security_deposit, value = 1) 
-selected <- add(60)
+selected <- add('security_deposit')
+
+
+
 
 
 #-------------the below codes for transit cannot run, yet to be fixed------
@@ -366,17 +379,17 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
                 +flexible$train+flexible$trains+flexible$transportation)
 }
 
-selected
 
 
  
+selected2 <- c("high_booking_rate", "accommodates", "availability_365", "availability_60", "availability_90", "bathrooms", "bed_type", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_has_profile_pic", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "instant_bookable", "is_business_travel_ready", "is_location_exact", "maximum_nights", "minimum_nights", "price", "require_guest_phone_verification", "require_guest_profile_picture", "requires_license", "propertyCommon_house", "propertySide_house", "security_deposit", "roomEntire home/apt", "roomPrivate room")
 
 
 # Export as CSV file
-export <- df[selected] # use the selected features
-write.csv(export, file="train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
+export <- df[selected2] # use the selected features
+write.csv(export, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 
-
+View(selected)
 
 
 
