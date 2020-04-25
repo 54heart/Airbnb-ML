@@ -6,8 +6,8 @@ library(SnowballC)
 library(dplyr)
 
 #read data col_types = cols(zipcode = col_character()
-train_x <- read_csv("data/airbnb_train_x.csv")
-train_y <- read_csv("data/airbnb_train_y.csv")
+train_x <- read_csv("airbnb_train_x.csv")
+train_y <- read_csv("airbnb_train_y.csv")
 # merge features and label
 df <- merge(train_x, train_y, by.x = 'X1', by.y = 'X1')
 
@@ -63,7 +63,7 @@ add <- function(var){
 
 
 
-
+View(df)
 
 # 2. Preprocess Variables
 # create list to store selected features
@@ -122,8 +122,10 @@ selected <- add('bathrooms')
 
 # var9 bed_type---------------
 # create new var70 : Real_Bed
-df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,0)
+df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,ifelse(df$bed_type=='Pull-out',1,0))
 selected <- add('Real_Bed')
+
+check(df$Real_Bed)
 
 
 # var10 bedrooms---------------

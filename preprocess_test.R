@@ -1,5 +1,8 @@
 ## this is the preprocessing--fix missing values and data format--for the test dataset
 
+#Changes to Real_Bed:
+#df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,ifelse(df$bed_type=='Pull-out',1,0))
+
 
 # 0. Load Libraries
 library(readr)
@@ -9,7 +12,7 @@ library(dplyr)
 
 #read data 
 # has 12208 obs
-df <- read_csv("Data/airbnb_test_x_handcleaned.csv")
+df <- read_csv("Data/airbnb_test_x_final.csv")
 
 
 
