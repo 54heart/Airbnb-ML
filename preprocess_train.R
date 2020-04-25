@@ -281,7 +281,7 @@ selected <- add('is_location_exact')
 # 47 maximum_nights---------------
 ## create new var73 long_stay: allow long-stay(more than 7 days) or not
 df['long_stay'] <- ifelse(df$maximum_nights >7, 1, 0)
-selected <- add('maximum_nights')
+selected <- add('long_stay')
 
 
 # 48 minimum_nights-----------------
@@ -387,5 +387,4 @@ selected <- add('flexible')
 # Export as CSV file
 export_train <- df[selected] # use the selected features 
 write.csv(export_train, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
-
 
