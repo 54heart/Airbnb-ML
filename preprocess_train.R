@@ -97,7 +97,7 @@ for (i in c(1:length(df$amenities))){
 }
 
 df$amenities_count <- vectored
-
+selected<- add('amenities_count')
 
 
 # 5 availability_365---------------
@@ -248,7 +248,7 @@ df$host_since <- as.Date(df$host_since, origin="1960-10-01")
 df$experience <- difftime(Sys.Date(), df$host_since)
 df$experience <- as.integer(df$experience)
 df<- remove(df$experience)
-
+selected <- add('experience')
 
 
 # 37 house_rules---------------
@@ -382,14 +382,9 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 
  
-selected2 <- c("high_booking_rate", "accommodates", "availability_365", "availability_60", "availability_90", "bathrooms", "bed_type", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_has_profile_pic", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "instant_bookable", "is_business_travel_ready", "is_location_exact", "maximum_nights", "minimum_nights", "price", "require_guest_phone_verification", "require_guest_profile_picture", "requires_license", "propertyCommon_house", "propertySide_house", "security_deposit", "roomEntire home/apt", "roomPrivate room")
-
-
 # Export as CSV file
 export <- df[selected2] # use the selected features
 write.csv(export, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
-
-View(selected)
 
 
 
