@@ -1,6 +1,4 @@
 #load libraries
-# check
-# colnames(df)[colSums(is.na(df)) > 0]
 
 # 0. Load Libraries
 library(readr)
@@ -56,7 +54,9 @@ impute<- function(x, roundup= FALSE, value = NULL){
 
 # define function that take in variable number in df and add to a list called selected
 add <- function(var_number){
-  selected <- c(selected, colnames(df[var_number+1]))
+  if ((colnames(df[var_number+1]) %in% selected)==FALSE){
+    selected <- c(selected, colnames(df[var_number+1]))
+  }
   return(selected)
 }
 
@@ -85,7 +85,9 @@ corpus <- Corpus(corpus)
 vectored <-c()
 #length(corpus)
 #i=0
-for (i in 1:100000){
+
+# 1:100000 to c(1:length(df$amenities))
+for (i in c(1:length(df$amenities))){
   if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 0){
     vectored <- c(vectored,0) }
   else if (length(unlist(strsplit(corpus[[i]]$content, "[,]"))) == 1){
@@ -146,6 +148,7 @@ df$cancellation_policy[df$cancellation_policy == 'no_refunds']<-5
 df$cancellation_policy[df$cancellation_policy == 'strict']<-6
 df$cancellation_policy[df$cancellation_policy == 'super_strict_30']<-8
 df$cancellation_policy[df$cancellation_policy == 'super_strict_60']<-10
+df$cancellation_policy <- as.integer(df$cancellation_policy)
 selected <- add(12)
 
 
@@ -170,8 +173,9 @@ selected <- add(20)
 
 # 21 first_review---------------
 ## calculate time difference between first_review and now
-df$first_review <- as.Date(df$first_review)
+df$first_review <- as.Date(df$first_review,origin="1960-10-01")
 df$first_review <- difftime(Sys.Date(), df$first_review)
+df$first_review<-as.integer(df$first_review)
 selected <- add(21)
 
 
@@ -243,6 +247,7 @@ selected <- add(33)
 ## remove 142 NA in df$experience, this also might affect other columns with 142 NAs
 df$host_since <- as.Date(df$host_since, origin="1960-10-01")
 df$experience <- difftime(Sys.Date(), df$host_since)
+df$experience <- as.integer(df$experience)
 df<- remove(df$experience)
 
 
@@ -290,28 +295,42 @@ selected <- add(54)
 
 
 # 55 property_type---------------
-## Property type: group into larger groups
+## Property type: group into larger groups and onehotencode
 apartment <- c("Loft, House", "Apartment", "Condominium", "Timeshare", "Aparthotel", "Serviced apartment")
 common_house <- c("Townhouse", "Bed and breakfast", "Bungalow", "Villa", "Vacation home", "Chalet")
 side_house <- c("Guesthouse",  "In-law", "Dorm", "Guest suite", "Cabin", "Cottage",  "Farm stay", "Nature lodge")
 hotel <- c("Hotel", "Boutique hotel", "Hostel")
 special <- c("Castle", "Camper/RV", "Boat" , "Treehouse", "Tiny house", "Yurt", "Cave", "Casa particular (Cuba)", "Hut", "Tipi", "Earth House","Earth house", "Train", "Barn"  ,"Island" , "Plane", "Lighthouse" ) 
 
-df['propertyApartment'] <- ifelse((df$property_type %in% apartment), 1, 0)
-df['propertyCommon_house']
+df['propertyApartment'] <- ifelse((df$property_type %in% apartment), 1, 0) #var77
+df['propertyCommon_house'] <- ifelse((df$property_type %in% common_house), 1, 0) #var78
+df['propertySide_house'] <- ifelse((df$property_type %in% side_house), 1, 0) #var79
+df['propertyHotel'] <- ifelse((df$property_type %in% hotel), 1, 0) #var80
+df['propertySpecial'] <- ifelse((df$property_type %in% special), 1, 0) #var81
+selected <- add(c(77:81))
+  
+# this code block is an alternative way to onehot encode all of the property types
+if(FALSE){
+library(mltools)
+library(data.table)
+newdata <- one_hot(as.data.table(as.factor(df$property_type)))
+}
+
+
+
 
 
 # 56 require_guest_phone_verification------------
 df$require_guest_phone_verification <- ifelse(df$require_guest_phone_verification==TRUE, 1, 0)
-add(56)
+selected <- add(56)
 
 # 57 require_guest_profile_picture----------
 df$require_guest_profile_picture <- ifelse(df$require_guest_profile_picture==TRUE, 1, 0)
-add(57)
+selected <- add(57)
 
 # 58 requires_license---------------
 df$requires_license <- ifelse(df$requires_license==TRUE, 1, 0)
-add(58)
+selected <- add(58)
 
 # 59 room_type---------------
 ## onehotencode. Created new three columns: var74 roomEntire home/apt, 75 roomPrivate room, 76 roomShared room
@@ -319,9 +338,9 @@ room <- as.factor(df$room_type)
 temp <- as.data.frame(model.matrix(~room)) # onehotencode
 colnames(temp)[1] <- 'roomEntire home/apt'
 df <- cbind(df, temp)
-add(74)
-add(75)
-add(76)
+selected <- add(74)
+selected <- add(75)
+selected <- add(76)
 
 
 # 60 security_deposit---------------
@@ -353,5 +372,13 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 # Export as CSV file
 export <- df[selected] # use the selected features
 write.csv(export, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
+
+
+
+
+
+
+
+
 
 
