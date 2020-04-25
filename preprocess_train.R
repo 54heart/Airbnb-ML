@@ -51,7 +51,8 @@ impute<- function(x, roundup= FALSE, value = NULL){
 }
 
 
-# define function that take in variable number in df and add to a list called selected
+
+# define function that take in variable name in df and add to a list called selected
 add <- function(var){
   if ((var %in% selected)==FALSE){
     selected <- c(selected, as.character(var))
@@ -60,8 +61,11 @@ add <- function(var){
 }
 
 
-
-
+# calculate mode
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
 
 
 
@@ -100,6 +104,9 @@ df$amenities_count <- vectored
 selected<- add('amenities_count')
 
 
+# 4 availablity_30--------------
+selected <-add('availability_30')
+
 # 5 availability_365---------------
 #making changes to availability_60 and avail_90 to make them independent of availabi_30 and so on
 df$availability_365 <- df$availability_365-df$availability_90
@@ -122,9 +129,8 @@ selected <- add('bathrooms')
 
 # var9 bed_type---------------
 # create new var70 : Real_Bed
-df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,0)
+df['Real_Bed'] <- ifelse(df$bed_type=='Real Bed',1,ifelse(df$bed_type=='Pull-out',1,0))
 selected <- add('Real_Bed')
-
 
 # var10 bedrooms---------------
 ## impute 92 NA with mean, and roundup to no decimals
@@ -168,6 +174,7 @@ df <- df[which(df$country_code == 'US'),]
 ## remove dollar sign
 df$extra_people <- as.numeric(substring(as.character(df$extra_people), first = 2))
 selected <- add('extra_people')
+
 
 
 # 21 first_review---------------
@@ -230,11 +237,7 @@ df$host_response_time[df$host_response_time =='within a day'] <- 2
 df$host_response_time[df$host_response_time == 'a few days or more'] <- 1
 df$host_response_time <- as.numeric(df$host_response_time)
 ### impute na with the mode
-#### define mode function
-Mode <- function(x) {
-  ux <- unique(x)
-  ux[which.max(tabulate(match(x, ux)))]
-}
+#### use my Mode function
 
 md <- Mode(df$host_response_time)
 df$host_response_time[is.na(df$host_response_time)==TRUE] <- md
@@ -276,14 +279,14 @@ selected <- add('is_location_exact')
 
 
 # 47 maximum_nights---------------
-## create new var73: allow long-stay(more than 7 days) or not
-ifelse(df$maximum_nights >7, 1, 0)
+## create new var73 long_stay: allow long-stay(more than 7 days) or not
+df['long_stay'] <- ifelse(df$maximum_nights >7, 1, 0)
 selected <- add('maximum_nights')
 
 
 # 48 minimum_nights-----------------
 selected <- add('minimum_nights')
-
+Mode(df$minimum_nights)
 
 
 # 54 price---------------
@@ -365,11 +368,10 @@ selected <- add('security_deposit')
 
 
 
-
-
-#-------------the below codes for transit cannot run, yet to be fixed------
 # 67 transit---------------
-if(FALSE){df$transit <- as.character(df$transit)
+library(maxent)
+library(RTextTools)
+df$transit <- as.character(df$transit)
 matrix <- create_matrix(df$transit, language="english", removeSparseTerms = 0.95, removeStopwords=TRUE, removeNumbers=FALSE, stemWords=TRUE, stripWhitespace=TRUE, toLower=TRUE)
 mat <- as.matrix(matrix)
 
@@ -377,19 +379,13 @@ flexible <- data.frame(mat)
 df$flexible <- (flexible$bike+flexible$bus+flexible$buses
                 +flexible$metro+flexible$line+flexible$lines+flexible$subway
                 +flexible$train+flexible$trains+flexible$transportation)
-}
 
-
+selected <- add('flexible')
 
  
+
 # Export as CSV file
-export <- df[selected2] # use the selected features
-write.csv(export, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
-
-
-
-
-
-
+export_train <- df[selected] # use the selected features 
+write.csv(export_train, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 
 
