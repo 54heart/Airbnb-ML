@@ -4,7 +4,7 @@ require(caTools)
 setwd("~/MSBAbeforeFeb/ClarkR/course_files_export/Project")
 library(ROCR)
 set.seed(12345)
-
+# Original model accuracy : 0.8320499
 
 
 df = read.csv("train_cleaned.csv")
