@@ -34,3 +34,7 @@ pred = predict(rf, newdata=df_valid)
 mc = table(df_valid$high_booking_rate, pred)
 acc = (mc[1] + mc[4])/sum(mc)
 acc
+
+
+pred = predict(rf, newdata=df_competition)
+
