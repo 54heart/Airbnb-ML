@@ -17,7 +17,7 @@ df_train <- df_rest[-valid_instn,]
 #View(df_competition)
 
 model_log <- glm(high_booking_rate~accommodates+ amenities_count+
-                   availability_365+ availability_60+availability_90+
+                   availability_365+ availability_60+availability_90+availability_30+
                    bathrooms+ Real_Bed+ bedrooms+ beds+ 
                    cancellation_policy+ cleaning_fee+ extra_people+
                    first_review+ guests_included+ host_about+
@@ -34,6 +34,41 @@ model_log <- glm(high_booking_rate~accommodates+ amenities_count+
                    roomShared.room+ security_deposit+ flexible
                  , data = df_train,family="binomial")
 summary(model_log)
+
+#lasso variable importance:
+library('caret')
+lambdaValues <- 10^seq(-3, 3, length = 100)
+
+
+fitRidge <- train(as.factor(high_booking_rate)  ~ 
+                    accommodates+ amenities_count+
+                    availability_365+ availability_60+availability_90+availability_30+
+                    bathrooms+ Real_Bed+ bedrooms+ beds+ 
+                    cancellation_policy+ cleaning_fee+ extra_people+
+                    first_review+ guests_included+ host_about+
+                    host_has_profile_pic+ host_identity_verified+
+                    host_is_superhost+ host_listings_count+
+                    host_response_rate+ host_response_time+ experience+
+                    instant_bookable+ is_business_travel_ready+ 
+                    is_location_exact+ long_stay+ minimum_nights+
+                    price+ propertyApartment+ propertyCommon_house+
+                    propertySide_house+ propertyHotel+ propertySpecial+
+                    require_guest_phone_verification+ 
+                    require_guest_profile_picture+ requires_license+
+                    roomEntire.home.apt+ roomPrivate.room+
+                    roomShared.room+ security_deposit+ flexible
+                  
+                  , family='binomial', data=df, method='glmnet', trControl=trainControl(method='cv', number=10), tuneGrid = expand.grid(alpha=0, lambda=lambdaValues))
+
+library(dplyr)
+varImp(fitRidge)$importance %>%   
+  #rownames_to_column(var = "Variable") %>%
+  mutate(Importance = scales::percent(Overall/100)) %>% 
+  arrange(desc(Overall)) %>% 
+  as_tibble()
+
+plot(varImp(fitRidge))
+
 
 
 
