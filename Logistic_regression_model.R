@@ -18,7 +18,7 @@ df_train <- df_rest[-valid_instn,]
 
 model_log <- glm(high_booking_rate~accommodates+ amenities_count+
                    
-                   bathrooms+ Real_Bed+ bedrooms+ beds+ 
+                   bathrooms+ Real_Bed+ bedrooms+ beds+ price+
                    cancellation_policy+require_guest_profile_picture+
                     guests_included+ host_about+host_has_profile_pic+
                     host_identity_verified+cleaning_fee+
@@ -120,7 +120,7 @@ confusion_matrix <- function(preds, actuals, cutoff){
 }
 
 #log_valid_preds = predict(model_log,newdata=df_valid,type="response")
-log_matrix <- confusion_matrix(log_valid_probs, df_valid$high_booking_rate,0.4985761)
+log_matrix <- confusion_matrix(log_valid_probs, df_valid$high_booking_rate,0.4804465)
 
 acc_log = (log_matrix[1] + log_matrix[4])/sum(log_matrix)
 acc_log
@@ -131,11 +131,11 @@ log_matrix
 
 #Now, fitting that to our test data subsetted from the training data
 log_test_probs <- predict(model_log, newdata = df_test, type = "response")
-log_matrix <- confusion_matrix(log_test_probs, df_test$high_booking_rate,0.4353808)
+log_matrix <- confusion_matrix(log_test_probs, df_test$high_booking_rate,0.4804465)
 acc_log = (log_matrix[1] + log_matrix[4])/sum(log_matrix)
 acc_log
 #0.7848243
-#0.7723649 -> lasso
+#0.7740075 -> lasso
 #
 log_test_probs = predict(model_log,newdata=df_competition,type="response")
 log_test_probs
