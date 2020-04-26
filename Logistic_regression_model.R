@@ -17,23 +17,42 @@ df_train <- df_rest[-valid_instn,]
 #View(df_competition)
 
 model_log <- glm(high_booking_rate~accommodates+ amenities_count+
-                   availability_365+ availability_60+availability_90+availability_30+
+                   
                    bathrooms+ Real_Bed+ bedrooms+ beds+ 
-                   cancellation_policy+ cleaning_fee+ extra_people+
-                   first_review+ guests_included+ host_about+
-                   host_has_profile_pic+ host_identity_verified+
-                   host_is_superhost+ host_listings_count+
-                   host_response_rate+ host_response_time+ experience+
+                   cancellation_policy+require_guest_profile_picture+
+                    guests_included+ host_about+host_has_profile_pic+
+                    host_identity_verified+cleaning_fee+
+                   host_is_superhost+
+                   availability_60+availability_90+availability_30+
+                   host_response_rate+ host_response_time+
                    instant_bookable+ is_business_travel_ready+ 
-                   is_location_exact+ long_stay+ minimum_nights+
-                   price+ propertyApartment+ propertyCommon_house+
+                   is_location_exact+ long_stay+
+                    propertyApartment+ propertyCommon_house+
                    propertySide_house+ propertyHotel+ propertySpecial+
                    require_guest_phone_verification+ 
-                   require_guest_profile_picture+ requires_license+
-                   roomEntire.home.apt+ roomPrivate.room+
+                  requires_license+
+                    roomPrivate.room+
                    roomShared.room+ security_deposit+ flexible
                  , data = df_train,family="binomial")
+
 summary(model_log)
+
+#accommodates+ amenities_count+
+#  availability_365+ availability_60+availability_90+availability_30+
+#  bathrooms+ Real_Bed+ bedrooms+ beds+ 
+#  cancellation_policy+ cleaning_fee+ extra_people+
+#  first_review+ guests_included+ host_about+
+#  host_has_profile_pic+ host_identity_verified+
+#  host_is_superhost+ host_listings_count+
+#  host_response_rate+ host_response_time+ experience+
+#  instant_bookable+ is_business_travel_ready+ 
+#  is_location_exact+ long_stay+ minimum_nights+
+#  price+ propertyApartment+ propertyCommon_house+
+#  propertySide_house+ propertyHotel+ propertySpecial+
+#  require_guest_phone_verification+ 
+#  require_guest_profile_picture+ requires_license+
+#  roomEntire.home.apt+ roomPrivate.room+
+#  roomShared.room+ security_deposit+ flexible
 
 #lasso variable importance:
 library('caret')
@@ -101,11 +120,12 @@ confusion_matrix <- function(preds, actuals, cutoff){
 }
 
 #log_valid_preds = predict(model_log,newdata=df_valid,type="response")
-log_matrix <- confusion_matrix(log_valid_probs, df_valid$high_booking_rate,0.4844703)
+log_matrix <- confusion_matrix(log_valid_probs, df_valid$high_booking_rate,0.4985761)
 
 acc_log = (log_matrix[1] + log_matrix[4])/sum(log_matrix)
 acc_log
 #0.7856666
+#0.7782773 -> lasso
 #Trying to improve the model
 log_matrix
 
@@ -115,7 +135,7 @@ log_matrix <- confusion_matrix(log_test_probs, df_test$high_booking_rate,0.43538
 acc_log = (log_matrix[1] + log_matrix[4])/sum(log_matrix)
 acc_log
 #0.7848243
-
+#0.7723649 -> lasso
 #
 log_test_probs = predict(model_log,newdata=df_competition,type="response")
 log_test_probs
