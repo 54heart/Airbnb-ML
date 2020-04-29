@@ -407,8 +407,16 @@ df$availability_30 <- impute(df$availability_30)
 df$availability_60 <- impute(df$availability_60)
 df$availability_90 <- impute(df$availability_90)
 
+#Not yet finalised-------------------
+#k-means addition of variable "clustercategory"
+df.X <-df[,-1] 
+df.y <- df[,1]
+which(is.na(df.X), arr.ind=TRUE)
 
-View(df)
+km.out = kmeans(x=df.X,centers=5,nstart=10)
+df.clusters <- cbind(df.y, km.out$cluster)
+df$clustercategory <- df.clusters[,2]
+#------------------------------
 
 # Export as CSV file
 export_train <- df[selected] # use the selected features 

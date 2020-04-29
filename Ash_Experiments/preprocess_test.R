@@ -401,11 +401,21 @@ df_test$availability_60 <- impute(df_test$availability_60)
 df_test$availability_90 <- impute(df_test$availability_90)
 df_test$experience <- impute(df_test$experience)
 
+#Kmeans on the test dataset
+#Not yet finalised--------------------
+#For test dataset
+df_test.X <-df_test 
+which(is.na(df_test.X), arr.ind=TRUE)
+km.out = kmeans(x=df_test.X,centers=5,nstart=10)
+#---------------------------------
+
 # Export as CSV file
 df_test<- as.data.frame(df_test)
 export <- df_test[selected_test] # use the selected_test features
 which(is.na(export), arr.ind=TRUE)
 #View(export)
+
+
 
 write.csv(export, file="test_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 
