@@ -6,8 +6,8 @@ library(SnowballC)
 library(dplyr)
 
 #read data col_types = cols(zipcode = col_character()
-train_x <- read_csv("data/airbnb_train_x.csv")
-train_y <- read_csv("data/airbnb_train_y.csv")
+train_x <- read_csv("airbnb_train_x.csv")
+train_y <- read_csv("airbnb_train_y.csv")
 # merge features and label
 df <- merge(train_x, train_y, by.x = 'X1', by.y = 'X1')
 
@@ -365,8 +365,50 @@ df$security_deposit <- as.numeric(substring(as.character(df$security_deposit),2)
 df$security_deposit <- ifelse(df$security_deposit>0,1,0)
 df$security_deposit <- impute(df$security_deposit, value = 1) 
 selected <- add('security_deposit')
+#-----------------------
+#Normalisation
+
+df$accommodates <- scale(df$accommodates)
+df$amenities_count <- scale(df$amenities_count)
+df$availability_30 <- scale(df$availability_30)
+df$availability_365 <- scale(df$availability_365)
+df$availability_60 <- scale(df$availability_60)
+df$availability_90 <- scale(df$availability_90)
+df$bathrooms <- scale(df$bathrooms)
+df$beds <- scale(df$beds)
+df$bedrooms <- scale(df$bedrooms)
+df$cleaning_fee <- scale(df$cleaning_fee)
+df$extra_people <- scale(df$extra_people)
+df$first_review <- scale(df$first_review)
+df$guests_included <- scale(df$guests_included)
+df$host_listings_count <- scale(df$host_listings_count)
+df$maximum_nights <- scale(df$maximum_nights)
+df$price <- scale(df$price)
+df$experience <- scale(df$experience)
+
+View(df)
+
+#Using kmeans clustering to create a new class variable
+df.X <- df[selected]
+df.y <- as.character(df[,72]) # selecting high booking rate
+
+#selecting the best k using elbow method
+k.max<-15
+wss<-sapply(1:k.max,function(k){kmeans(na.omit(df.X),k,nstart=20,iter.max = 15)$tot.withinss})
+
+plot(1:k.max, wss,
+     type="b", pch = 19, frame = FALSE, 
+     xlab="Number of clusters K",
+     ylab="Total within-clusters sum of squares")
 
 
+k_optimal <- 
+  
+km.out = kmeans(x=df.X,centers=k_optimal,nstart=10)
+
+df.clusters <- cbind(df.y, km.out$cluster)
+
+df.clusters
 
 # 67 transit---------------
 library(maxent)
@@ -382,9 +424,9 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 selected <- add('flexible')
 
- 
+View(df)
 
 # Export as CSV file
 export_train <- df[selected] # use the selected features 
-write.csv(export_train, file="data/train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
+write.csv(export_train, file="train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 

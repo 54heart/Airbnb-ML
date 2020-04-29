@@ -9,6 +9,9 @@ set.seed(12345)
 
 df = read.csv("train_cleaned.csv")
 
+
+View(df)
+
 df_competition = read.csv("test_cleaned.csv")
 
 ## Randomly partition the data into 30% testing data and the remaining 70% data.
@@ -29,6 +32,7 @@ rf <- randomForest(
   df_train$high_booking_rate ~ .-high_booking_rate,
   data=df_train
 )
+
 pred = predict(rf, newdata=df_valid)
 
 mc = table(df_valid$high_booking_rate, pred)
