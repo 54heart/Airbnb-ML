@@ -386,29 +386,7 @@ df$maximum_nights <- scale(df$maximum_nights)
 df$price <- scale(df$price)
 df$experience <- scale(df$experience)
 
-View(df)
 
-#Using kmeans clustering to create a new class variable
-df.X <- df[selected]
-df.y <- as.character(df[,72]) # selecting high booking rate
-
-#selecting the best k using elbow method
-k.max<-15
-wss<-sapply(1:k.max,function(k){kmeans(na.omit(df.X),k,nstart=20,iter.max = 15)$tot.withinss})
-
-plot(1:k.max, wss,
-     type="b", pch = 19, frame = FALSE, 
-     xlab="Number of clusters K",
-     ylab="Total within-clusters sum of squares")
-
-
-k_optimal <- 
-  
-km.out = kmeans(x=df.X,centers=k_optimal,nstart=10)
-
-df.clusters <- cbind(df.y, km.out$cluster)
-
-df.clusters
 
 # 67 transit---------------
 library(maxent)
@@ -424,9 +402,16 @@ df$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 selected <- add('flexible')
 
+#Imputing some remaining columns
+df$availability_30 <- impute(df$availability_30)
+df$availability_60 <- impute(df$availability_60)
+df$availability_90 <- impute(df$availability_90)
+
+
 View(df)
 
 # Export as CSV file
 export_train <- df[selected] # use the selected features 
+which(is.na(export_train), arr.ind=TRUE)
 write.csv(export_train, file="train_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 

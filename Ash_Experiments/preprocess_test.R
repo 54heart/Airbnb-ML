@@ -395,9 +395,17 @@ df_test$maximum_nights <- scale(df_test$maximum_nights)
 df_test$price <- scale(df_test$price)
 df_test$experience <- scale(df_test$experience)
 
+#Imputing some remaining columns
+df_test$availability_30 <- impute(df_test$availability_30)
+df_test$availability_60 <- impute(df_test$availability_60)
+df_test$availability_90 <- impute(df_test$availability_90)
+df_test$experience <- impute(df_test$experience)
 
 # Export as CSV file
 df_test<- as.data.frame(df_test)
 export <- df_test[selected_test] # use the selected_test features
+which(is.na(export), arr.ind=TRUE)
+#View(export)
+
 write.csv(export, file="test_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 

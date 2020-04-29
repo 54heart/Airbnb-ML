@@ -9,7 +9,7 @@ library(dplyr)
 
 #read data 
 # has 12208 obs
-df_test <- read_csv("Data/airbnb_test_x_deleted2obs.csv")
+df_test <- read_csv("airbnb_test_x_deleted2obs.csv")
 
 
 
@@ -247,18 +247,6 @@ selected_test <- add_test('experience')
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 # 38 instant_bookable---------------
 ## convert to numeric 1,0 
 ## impute 3 NAs
@@ -330,10 +318,6 @@ selected_test <- add_test('propertyHotel')
 selected_test <- add_test('propertySpecial')
 
 
-
-
-
-
 # 56 require_guest_phone_verification------------
 df_test$require_guest_phone_verification <- impute(df_test$require_guest_phone_verification, value = FALSE)
 df_test$require_guest_phone_verification <- ifelse(df_test$require_guest_phone_verification==TRUE, 1, 0)
@@ -390,11 +374,38 @@ df_test$flexible <- (flexible$bike+flexible$bus+flexible$buses
 
 selected_test <- add_test('flexible')
 
+#-----------------------
+#Normalisation
 
+df_test$accommodates <- scale(df_test$accommodates)
+df_test$amenities_count <- scale(df_test$amenities_count)
+df_test$availability_30 <- scale(df_test$availability_30)
+df_test$availability_365 <- scale(df_test$availability_365)
+df_test$availability_60 <- scale(df_test$availability_60)
+df_test$availability_90 <- scale(df_test$availability_90)
+df_test$bathrooms <- scale(df_test)
+df_test$beds <- scale(df_test$beds)
+df_test$bedrooms <- scale(df_test$bedrooms)
+df_test$cleaning_fee <- scale(df_test$cleaning_fee)
+df_test$extra_people <- scale(df_test$extra_people)
+df_test$first_review <- scale(df_test$first_review)
+df_test$guests_included <- scale(df_test$guests_included)
+df_test$host_listings_count <- scale(df_test$host_listings_count)
+df_test$maximum_nights <- scale(df_test$maximum_nights)
+df_test$price <- scale(df_test$price)
+df_test$experience <- scale(df_test$experience)
 
+#Imputing some remaining columns
+df_test$availability_30 <- impute(df_test$availability_30)
+df_test$availability_60 <- impute(df_test$availability_60)
+df_test$availability_90 <- impute(df_test$availability_90)
+df_test$experience <- impute(df_test$experience)
 
 # Export as CSV file
 df_test<- as.data.frame(df_test)
 export <- df_test[selected_test] # use the selected_test features
-write.csv(export, file="data/test_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
+which(is.na(export), arr.ind=TRUE)
+#View(export)
+
+write.csv(export, file="test_cleaned.csv", row.names = FALSE) #Write dataframe as CSV
 
