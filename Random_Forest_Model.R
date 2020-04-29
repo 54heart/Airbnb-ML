@@ -11,6 +11,7 @@ df = read.csv("train_cleaned.csv")
 
 df_competition = read.csv("test_cleaned.csv")
 
+nrow(df_competition)
 ## Randomly partition the data into 30% testing data and the remaining 70% data.
 test_instn = sample(nrow(df), 0.25*nrow(df))
 df_test <- df[test_instn,]
@@ -24,6 +25,7 @@ summary(df_train)
 
 
 df_train$high_booking_rate <- as.factor(df_train$high_booking_rate)
+
 
 rf <- randomForest(
   df_train$high_booking_rate ~ .-high_booking_rate,
