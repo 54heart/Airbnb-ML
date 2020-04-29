@@ -21,13 +21,15 @@ df_train <- df_rest[-valid_instn,]
 train.HBR=df_train$high_booking_rate
 valid.HBR=df_valid$high_booking_rate
 
-#Getting the columns you want
-train.X=df_train[,c( "accommodates", "amenities_count", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_has_profile_pic", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertyHotel", "propertySpecial", "require_guest_phone_verification", "require_guest_profile_picture", "requires_license", "roomEntire.home.apt", "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
-valid.X=df_valid[,c("accommodates", "amenities_count", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_has_profile_pic", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertyHotel", "propertySpecial", "require_guest_phone_verification", "require_guest_profile_picture", "requires_license", "roomEntire.home.apt", "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
-test.X=df_test[,c("accommodates", "amenities_count", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_has_profile_pic", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertyHotel", "propertySpecial", "require_guest_phone_verification", "require_guest_profile_picture", "requires_license", "roomEntire.home.apt", "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
+View(df_train)
 
-knn.pred_tr=knn(train.X,train.X,train.HBR,k=1)
-knn.pred_va=knn(train.X,valid.X,train.HBR,k=1)
+#Getting the columns you want
+train.X=df_train[,c( "accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
+valid.X=df_valid[,c("accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
+test.X=df_test[,c("accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
+
+knn.pred_tr=knn(train.X,train.X,train.HBR,k=5)
+knn.pred_va=knn(train.X,valid.X,train.HBR,k=5)
 
 grid_knn = c(1, 3, 5, 7, 9,11, 13,15,19, 21, 25, 31,35)
 
@@ -37,10 +39,8 @@ ind<-1
 #calculate training and calidation accuracies for each k value in grid_knn
 for (kval in grid_knn){ #for each value in the grid
   
-  
-  knn.pred_va=knn(train.X,valid.X,train.HBR,k=kval)
   knn.pred_tr=knn(train.X,train.X,train.HBR,k=kval)
-  
+  knn.pred_va=knn(train.X,valid.X,train.HBR,k=kval)
   
   #Computing the accuracy on validation and training
   correct_va <- sum(ifelse(knn.pred_va==valid.HBR,1,0))
@@ -54,6 +54,8 @@ for (kval in grid_knn){ #for each value in the grid
   
   ind <-ind+1
 }
+
+accuracy_va
 
 #View our matrix
 vals  
