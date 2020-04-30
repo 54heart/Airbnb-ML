@@ -8,7 +8,7 @@ set.seed(12345)
 #0.8382075 -> after removing some variables
 
 df = read.csv("train_cleaned.csv")
-
+df = read.csv("micetrain_cleaned.csv")
 
 View(df)
 
@@ -30,7 +30,7 @@ df_train$high_booking_rate <- as.factor(df_train$high_booking_rate)
 
 #-----------Without dropping any variable-------------------
 rf<- randomForest(df_train$high_booking_rate~.,data = df_train,
-                  n_estimators = 20, min_sample_leaf = 80)
+                  n_estimators = 40, min_sample_leaf = 80)
 
 pred = predict(rf, newdata=df_valid)
 

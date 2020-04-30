@@ -8,28 +8,28 @@ df = read.csv("train_cleaned.csv")
 df_competition = read.csv("test_cleaned.csv")
 #View(df_competition)
 ## Randomly partition the data into 30% testing data and the remaining 70% data.
-test_instn = sample(nrow(df), 0.25*nrow(df))
-df_test <- df[test_instn,]
+test_instn = sample(nrow(df), 0.3*nrow(df))
+df_valid <- df[test_instn,]
 ## Save the rest of the data as the data that isn't testing
-df_rest <- df[-test_instn,]
+df_train <- df[-test_instn,]
 ## e. Randomly partition the remaining data into 75% training data and 25% validation data.
-valid_instn = sample(nrow(df_rest), 0.3*nrow(df_rest))
-df_valid <- df_rest[valid_instn,]
-df_train <- df_rest[-valid_instn,]
+#valid_instn = sample(nrow(df_rest), 0.3*nrow(df_rest))
+#df_valid <- df_rest[valid_instn,]
+#df_train <- df_rest[-valid_instn,]
 #View(df_competition)
 
 train.HBR=df_train$high_booking_rate
 valid.HBR=df_valid$high_booking_rate
 
 View(df_train)
-
+# 0.8018229 for k = 25
 #Getting the columns you want
 train.X=df_train[,c( "accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
 valid.X=df_valid[,c("accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
-test.X=df_test[,c("accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
+#test.X=df_test[,c("accommodates", "amenities_count", "availability_30", "availability_365", "availability_60", "availability_90", "bathrooms", "Real_Bed", "bedrooms", "beds", "cancellation_policy", "cleaning_fee", "extra_people", "first_review", "guests_included", "host_about", "host_identity_verified", "host_is_superhost", "host_listings_count", "host_response_rate", "host_response_time", "experience", "instant_bookable", "is_business_travel_ready", "is_location_exact", "long_stay", "minimum_nights", "price", "propertyApartment", "propertyCommon_house", "propertySide_house", "propertySpecial",  "requires_license",  "roomPrivate.room", "roomShared.room", "security_deposit", "flexible")]
 
-knn.pred_tr=knn(train.X,train.X,train.HBR,k=5)
-knn.pred_va=knn(train.X,valid.X,train.HBR,k=5)
+knn.pred_tr=knn(train.X,train.X,train.HBR,k=33)
+knn.pred_va=knn(train.X,valid.X,train.HBR,k=33)
 
 grid_knn = c(1, 3, 5, 7, 9,11, 13,15,19, 21, 25, 31,35)
 

@@ -250,7 +250,7 @@ selected <- add('host_response_time')
 df$host_since <- as.Date(df$host_since, origin="1960-10-01")
 df$experience <- difftime(Sys.Date(), df$host_since)
 df$experience <- as.integer(df$experience)
-df<- remove(df$experience)
+df<- remove(df$experience)  
 selected <- add('experience')
 
 

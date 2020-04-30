@@ -1,0 +1,88 @@
+---
+title: "R Notebook"
+output:
+  html_notebook: default
+  pdf_document:
+    latex_engine: xelatex
+always_allow_html: yes
+---
+
+```{r setup, include=FALSE}
+
+# This chunk shows/hides the code in your final report. When echo = TRUE, the code
+# is shown in the report. When echo = FALSE, the code is hidden from the final report.
+# We would like to see your code, so please leave the setting as is during the course.
+# This chunk will not show up in your reports, so you can safely ignore its existence.
+
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+The following is your first chunk to start with. Remember, you can add chunks using the menu
+above (Insert -> R) or using the keyboard shortcut Ctrl+Alt+I. A good practice is to use
+different code chunks to answer different questions. You can delete this comment if you like.
+
+Other useful keyboard shortcuts include Alt- for the assignment operator, and Ctrl+Shift+M
+for the pipe operator. You can delete these reminders if you don't want them in your report.
+
+
+```{r}
+setwd("C:/") #Don't forget to set your working directory before you start!
+
+library("tidyverse")
+library("plotly")
+library("skimr")
+library('mice')
+
+library("fpp3")
+library("plotly")
+library("skimr")
+library("lubridate")
+```
+```{r}
+air1Chicago<- read_csv("Chicagodata.csv")
+
+head(air1Chicago)
+```
+
+
+```{r}
+air1Chicago$security_deposit<- as.numeric(gsub("\\$", "", air1Chicago$security_deposit))
+air1Chicago$price <- as.numeric(gsub("\\$", "", air1Chicago$price))
+air1Chicago$cleaning_fee <- as.numeric(gsub("[$]", "", air1Chicago$cleaning_fee))
+air1Chicago$extra_people <- as.numeric(gsub("\\$", "", air1Chicago$extra_people))
+air1Chicago$bathrooms <- as.numeric(air1Chicago$bathrooms)
+air1Chicago$beds <- as.numeric(air1Chicago$beds)
+air1Chicago$accomodates <- as.numeric(air1Chicago$accommodates)
+air1Chicago$availability_30 <- as.numeric(air1Chicago$availability_30)
+air1Chicago$availability_60 <- as.numeric(air1Chicago$availability_60)
+air1Chicago$availability_90 <- as.numeric(air1Chicago$availability_90)
+air1Chicago$availability_365 <- as.numeric(air1Chicago$availability_365)
+air1Chicago$guests_included <- as.numeric(air1Chicago$guests_included)
+air1Chicago$host_response_rate <- as.numeric(gsub("\\%", '', air1Chicago$host_response_rate))
+```
+
+
+```{r}
+
+tempChicago<- air1Chicago%>%
+  select(review_scores_rating, id, review_scores_value,security_deposit,price,beds,bedrooms,host_response_rate,extra_people,cleaning_fee,review_scores_rating,accommodates,availability_30,availability_90,availability_365)
+
+head(tempChicago)
+```
+
+```{r}
+tempData <- mice(tempChicago,m=3,maxit=50,meth='pmm',seed=500)
+#summary(tempData)
+
+```
+
+```{r}
+completedData <- complete(tempData,1)
+```
+
+
+
+
+
