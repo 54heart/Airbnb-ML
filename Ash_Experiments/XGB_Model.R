@@ -6,7 +6,7 @@ library(caret)
 set.seed(12345)
 library(class)
 
-df = read.csv("train_cleaned.csv")
+df = read.csv("data/train4_bins_price.csv")
 
 df_competition = read.csv("test_cleaned.csv")
 
@@ -34,7 +34,7 @@ xgb <- xgboost(data = data.matrix(df.X),
                nround=25, 
                #subsample = 0.5,
                #colsample_bytree = 0.5,
-               seed = 1,
+               set.seed(1),
                #eval_metric = "merror",
                objective = "binary:logistic",
                #num_class = 12,
@@ -66,3 +66,4 @@ acc = (mc[1] + mc[4])/sum(mc)
 acc #0.8284646
 
 dim(newdata)
+
